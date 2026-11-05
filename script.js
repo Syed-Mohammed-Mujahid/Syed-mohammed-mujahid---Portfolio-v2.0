@@ -165,7 +165,12 @@ document.addEventListener("DOMContentLoaded", () => {
       li.firstChild.addEventListener('click', () => { setPalette(id); open(false); });
     });
     // Open (true) or close (false) the dropdown and keep aria-expanded in sync.
-    function open(o) { list.hidden = !o; btn.setAttribute('aria-expanded', o); }
+    function open(o) {
+      list.hidden = !o; btn.setAttribute('aria-expanded', o);
+      // On phones the list is one sideways-scrolling row: scroll the chosen palette into the middle
+      const cur = list.querySelector('[aria-checked="true"]');
+      if (o && cur && list.scrollWidth > list.clientWidth) list.scrollLeft = cur.parentElement.offsetLeft - (list.clientWidth - cur.offsetWidth) / 2;
+    }
     btn.addEventListener('click', () => {
       const willOpen = list.hidden; open(willOpen);
       if (willOpen) { // only one dropdown open at a time
@@ -1205,5 +1210,25 @@ document.addEventListener("DOMContentLoaded", () => {
       li.addEventListener('focusout', () => pv.classList.remove('on'));
     });
     addEventListener('scroll', () => pv.classList.remove('on'), { passive: true });
+  });
+})();
+
+/* ---------- Mobile menu (hamburger) ---------- */
+// On phones the header is a single line: name, palette button and a menu button.
+// The menu button opens a panel with the page links. (On bigger screens the links sit in the header and the button is hidden.)
+(function () {
+  document.addEventListener('DOMContentLoaded', () => {
+    const bar = document.querySelector('.topbar'), btn = document.getElementById('navToggle'), nav = document.getElementById('nav');
+    if (!bar || !btn || !nav) return;
+    const set = open => {
+      bar.classList.toggle('nav-open', open);
+      btn.setAttribute('aria-expanded', open);
+      btn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    };
+    btn.addEventListener('click', () => set(!bar.classList.contains('nav-open')));
+    nav.addEventListener('click', e => { if (e.target.closest('a')) set(false); });                 // choosing a page closes the panel
+    document.addEventListener('click', e => { if (!e.target.closest('#nav') && !e.target.closest('#navToggle')) set(false); }, true); // tapping elsewhere closes it
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') set(false); });
+    matchMedia('(min-width: 641px)').addEventListener('change', e => { if (e.matches) set(false); }); // rotating to a wide screen resets it
   });
 })();
