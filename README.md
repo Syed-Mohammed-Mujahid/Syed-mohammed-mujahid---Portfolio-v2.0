@@ -5,7 +5,7 @@ A personal portfolio website with **two modes in one site**: **Data Science / AI
 
 Built with plain **HTML, CSS and JavaScript**. There is no framework, no build step and no dependencies to install.
 
-> **Live site:** _add your Vercel or GitHub Pages link here_
+> **Live site:**(https://mohammedmujahid.vercel.app/)
 
 ---
 
